@@ -1,0 +1,5 @@
+Install
+=======
+
+mkvirtualenv spoption -p python3
+pip install -r requierements.txt
