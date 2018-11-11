@@ -1,3 +1,5 @@
-jupyther
+jupyter
 numpy
 matplotlib
+requests
+bs4
