@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 
 def show_profit(x, y, label, color):    
     fig, ax = plt.subplots()
+    plt.style.use('dark_background')
     ax.spines['top'].set_visible(False) # Top border removed
     ax.spines['right'].set_visible(False) # Right border removed
     ax.spines['bottom'].set_position('zero') # Sets the X-axis in the center
@@ -15,6 +16,7 @@ def show_profit(x, y, label, color):
     plt.show()
 def show_profit_compare(x, y1, label1, color1, y2, label2, color2):    
     fig, ax = plt.subplots()
+    plt.style.use('dark_background')
     ax.spines['top'].set_visible(False) # Top border removed
     ax.spines['right'].set_visible(False) # Right border removed
     ax.spines['bottom'].set_position('zero') # Sets the X-axis in the center

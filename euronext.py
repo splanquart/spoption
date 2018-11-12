@@ -11,7 +11,7 @@ class Page:
         # https://derivatives.euronext.com/en/equity-index-derivatives/contract-list?quicktabs_309=4#quicktabs-309
         self.site = "https://derivatives.euronext.com/fr/products/index-options" if not site else site
         self.ticker = self.tickers[ticker_idx]
-        self.params = "Class_type=0&Class_symbol=&Class_exchange=&ex=&ps=15&md=11-2018" if not params else params
+        self.params = "Class_type=0&Class_symbol=&Class_exchange=&ex=&ps=999&md=11-2018" if not params else params
 
     def fetch(self):
         requete = requests.get("{}/{}?{}".format(self.site, self.ticker, self.params))
@@ -30,7 +30,10 @@ class Page:
         self.put = {}
         for tr in trs[3:-1]:
             tds = tr.find_all('td')
-            if str(tds[4].text) != '-':
+            if (str(tds[4].text) != '-' and
+                str(tds[5].text) != '-' and
+                str(tds[9].text) != '-' and
+                str(tds[10].text) != '-') :
                 strike = float(tds[7].text)
                 achat = float(tds[4].text)
                 vente = float(tds[5].text)
