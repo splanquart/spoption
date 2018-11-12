@@ -18,12 +18,16 @@ class Page:
         page = requete.content
         self.soup = BeautifulSoup(page, features="html.parser")
         self.page_title = self.soup.find("h1", {"class": "title"}).text
+        self.call = {}
+        self.put = {}
         return self.soup
 
     def scrap_options(self):
         div = self.soup.find("div", {"class": "call-put-table"})
         trs = div.find_all("tr")
         elmts = {}
+        self.call = {}
+        self.put = {}
         for tr in trs[3:-1]:
             tds = tr.find_all('td')
             if str(tds[4].text) != '-':
@@ -35,4 +39,6 @@ class Page:
                 vente = float(tds[10].text)
                 p = Option('Put', strike=strike, achat=achat, vente=vente)
                 elmts[float(c.strike)] = {'call': c, 'put': p}
+                self.call[float(c.strike)] = c
+                self.put[float(p.strike)] = p
         return elmts
