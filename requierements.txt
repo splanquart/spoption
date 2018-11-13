@@ -1,5 +1,7 @@
 jupyter
+jupyterthemes
 numpy
 matplotlib
 requests
 bs4
+tabulate

@@ -1,5 +1,8 @@
 import numpy as np
 import matplotlib.pyplot as plt
+from IPython.display import HTML, display
+import tabulate
+
 
 
 def show_profit(x, y, label, color):    
@@ -43,7 +46,7 @@ class Graph:
     def compare(self,
                 option_a, direction_a, option_b, direction_b,
                 label_a=None, color_a='r',
-                label_b=None, color_b='b'):
+                label_b=None, color_b='chartreuse'):
         if not label_a:
             label_a = '{} {}'.format(str(option_a), direction_a)
         if not label_b:
@@ -54,7 +57,16 @@ class Graph:
                             payoff_a, label_a, color_a,
                             payoff_b, label_b, color_b
                            )
-    def profit_strategy(self, strategy, color='b'):
+    def profit_strategy(self, strategy, color='chartreuse'):
         payoff = strategy.payoff(self.sT)
         label = str(strategy)
         show_profit(self.sT, payoff, label, color)
+    def display_summary(self, strategy):
+        detailst = [[l['cat'], l['strike'], l['direction'], l['quantity'], l['cost']]
+                    for l in strategy.summary()]
+        headers=['Category', 'strike', 'direction', 'Quantity', 'Cost']
+        display(HTML(tabulate.tabulate(detailst, tablefmt='html', headers=headers)))
+    def display_page_raw(self, page):
+        headers=['Settl.C', 'OIC', 'Day Vol C', 'Last C', 'bid C', 'ask C','C',
+                 'strike', 'P', 'bid P', 'ask P', 'Last P', 'Day Vol P', 'OIP', 'Settl.P']
+        display(HTML(tabulate.tabulate(page.data, tablefmt='html', headers=headers)))

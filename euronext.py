@@ -6,7 +6,7 @@ from product import Option
 
 class Page:
     def __init__(self, site=None, ticker_idx=0, params=None):
-        self.tickers = ['4PX-DPAR', '2PX-DPAR', '1PX-DPAR', '5PX-DPAR']
+        self.tickers = ['PXA-DPAR', '4PX-DPAR', '2PX-DPAR', '1PX-DPAR', '5PX-DPAR']
         # liste des options euronext CAC40 :
         # https://derivatives.euronext.com/en/equity-index-derivatives/contract-list?quicktabs_309=4#quicktabs-309
         self.site = "https://derivatives.euronext.com/fr/products/index-options" if not site else site
@@ -28,8 +28,10 @@ class Page:
         elmts = {}
         self.call = {}
         self.put = {}
+        self.data = []
         for tr in trs[3:-1]:
             tds = tr.find_all('td')
+            self.data.append([td.text for td in tds])
             if (str(tds[4].text) != '-' and
                 str(tds[5].text) != '-' and
                 str(tds[9].text) != '-' and

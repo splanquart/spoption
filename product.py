@@ -1,4 +1,5 @@
 import numpy as np
+from math import ceil, floor
 
 
 class Option:
@@ -35,25 +36,3 @@ class Option:
             return -self.multiplier * self.vente
         raise Exception('direction not good {}'.format(direction))
 
-class Strategy:
-    def __init__(self, label=''):
-        self.label = label
-        self.options = []
-    def add(self, option, direction, quantity):
-        self.options.append({'option': option,
-                             'direction': direction,
-                             'quantity':quantity})
-        return self
-    def payoff(self, sT, direction='long'):
-        payoff_sum = 0
-        for o in self.options:
-            option = o['option']
-            direct = o['direction']
-            quantity = o['quantity']
-            payoff = option.payoff(sT, direct) * quantity
-            payoff_sum += payoff
-        return payoff_sum
-    def __str__(self):
-        return self.label if self.label else 'Strategy'
-    def cost(self):
-        return sum(e['option'].cost(e['direction']) * e['quantity'] for e in self.options)
