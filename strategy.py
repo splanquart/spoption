@@ -36,10 +36,10 @@ class Strategy:
         return sum(e['option'].cost(e['direction']) * e['quantity'] for e in self.options)
 
 
-def RatioSpread(call_long, call_short):
+def RatioSpread(call_long, call_short, ratio=None):
     plong = call_long.achat
     pshort = call_short.vente
-    ratio = ceil(plong/pshort)
+    ratio = ceil(plong/pshort) if not ratio else ratio
     print('Ratio : {}/{} ~ {}'.format(plong, pshort, ratio))
     return (Strategy('Ratio Spread {}-{} R:{}'.format(call_long.strike, call_short.strike, ratio))
             .add(call_long, 'long', 1)
