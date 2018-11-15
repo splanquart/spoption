@@ -83,7 +83,7 @@ def BoxSpread(call_long, call_short, put_long, put_short):
     pshort = call_short.vente
     plong = put_long.achat
     pshort = put_short.vente
-    return (Strategy('Box Spread {}-{}'.format(put_long.strike, put_short.strike))
+    return (Strategy('Box Spread {}-{}'.format(call_long.strike, put_short.strike))
             .add(call_long, 'short', 1)
             .add(call_short, 'long', 1)
             .add(put_long, 'short', 1)
