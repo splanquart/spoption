@@ -37,11 +37,11 @@ class Page:
                 str(tds[9].text) != '-' and
                 str(tds[10].text) != '-') :
                 strike = float(tds[7].text)
-                achat = float(tds[4].text)
-                vente = float(tds[5].text)
+                vente = float(tds[4].text)
+                achat = float(tds[5].text)
                 c = Option('Call', strike=strike, achat=achat, vente=vente)
-                achat = float(tds[9].text)
-                vente = float(tds[10].text)
+                vente = float(tds[9].text)
+                achat = float(tds[10].text)
                 p = Option('Put', strike=strike, achat=achat, vente=vente)
                 elmts[float(c.strike)] = {'call': c, 'put': p}
                 self.call[float(c.strike)] = c
