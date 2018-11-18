@@ -90,6 +90,20 @@ def BoxSpread(call_long, call_short, put_long, put_short):
             .add(put_short, 'long', 1)
            )
 
+def Butterfly(call_low, call_middle, call_high, label=None):
+    """A Butterfly is buy 2 call strike K et K+2 and sell two call of strike K+1:
+       - long a call at a strike K
+       - short two calls at a strike K+1
+       - long a call at a strike K+2
+    """
+    label = 'Butterfly {}-2*{}+{}'.format(call_low.strike,
+                                          call_middle.strike,
+                                          call_high.strike)
+    butterfly = (Strategy(label)
+                 .add(call_low, 'long', 1)
+                 .add(call_middle, 'short', 2)
+                 .add(call_high, 'long', 1))
+    return butterfly
 
 def IronCondor(put_k1, put_k2, call_k3, call_k4):
     """An Iron Condor is buy and sell put of different strike:
