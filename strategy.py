@@ -37,6 +37,12 @@ class Strategy:
 
 
 def RatioSpread(call_long, call_short, ratio=None):
+    """
+    RatioSpread
+         /\
+    ----/  \
+            ------
+    """
     plong = call_long.achat
     pshort = call_short.vente
     ratio = ceil(plong/pshort) if not ratio else ratio
@@ -51,6 +57,10 @@ def CallSpread(call_long, call_short):
     """A Call Spread is buy and sell call of different strike:
        - long a call at a strike
        - short a call at a strike superior
+              /------
+             /
+            /
+       ----/
     """
     plong = call_long.achat
     pshort = call_short.vente
@@ -64,6 +74,10 @@ def PutSpread(put_long, put_short):
     """A Put Spread is buy and sell put of different strike:
        - long a put at a strike
        - short a put at a strike inferior
+       -----\
+             \
+              \
+               \-----
     """
     plong = put_long.achat
     pshort = put_short.vente
@@ -78,6 +92,10 @@ def BoxSpread(call_long, call_short, put_long, put_short):
        - short a put at a strike
        - long a put at a strike inferior
        This a strategy of hedgin not speculatif
+             -----
+            /     \
+           /       \
+       ---/         \--------
     """
     plong = call_long.achat
     pshort = call_short.vente
@@ -95,6 +113,10 @@ def Butterfly(call_low, call_middle, call_high, label=None):
        - long a call at a strike K
        - short two calls at a strike K+1
        - long a call at a strike K+2
+             /\
+            /  \
+           /    \
+       ---/      \--------
     """
     label = 'Butterfly {}-2*{}+{}'.format(call_low.strike,
                                           call_middle.strike,
