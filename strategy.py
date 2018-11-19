@@ -54,7 +54,6 @@ def RatioSpread(call_long, call_short, ratio=None):
             .add(call_short, 'short', ratio)
            )
 
-
 def CallSpread(call_long, call_short):
     """A Call Spread is buy and sell call of different strike:
        - long a call at a strike
@@ -74,8 +73,7 @@ def CallSpread(call_long, call_short):
             .add(call_short, 'short', 1)
            )
 
-
-def PutSpread(put_long, put_short):
+class PutSpread(Strategy):
     """A Put Spread is buy and sell put of different strike:
        - long a put at a strike
        - short a put at a strike inferior
@@ -85,14 +83,30 @@ def PutSpread(put_long, put_short):
        .       \       .
        .        \_____ .
        .................
+       - put_long.strike > put_short.strike
 
+       >>> ps = PutSpread(put[100], put[80])
     """
-    plong = put_long.achat
-    pshort = put_short.vente
-    return (Strategy('Put Spread {}-{}'.format(put_long.strike, put_short.strike))
-            .add(put_long, 'long', 1)
-            .add(put_short, 'short', 1)
-           )
+    def __init__(self, put_long, put_short):
+        plong = put_long.achat
+        pshort = put_short.vente
+        super().__init__('Put Spread {}-{}'.format(put_long.strike, put_short.strike))
+        self.add(put_long, 'long', 1)
+        self.add(put_short, 'short', 1)
+
+    @staticmethod
+    def explorator(list_put, step=50):
+        strikes = [o.strike for o in list_put]
+        by_strike = dict(zip(strikes, list_put))
+        css = []
+        for i, strike_a in enumerate(strikes[:-1]):
+            strike_b = strike_a + step
+            if (strike_b not in strikes):
+                continue
+            a=by_strike[strike_a]
+            b=by_strike[strike_b]
+            css.append(PutSpread(b, a))
+        return css
 
 class BoxSpread(Strategy):
     """A Box Spread is buy and sell put and call of different strike:
