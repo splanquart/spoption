@@ -9,6 +9,9 @@ class Option:
         self.achat = achat
         self.vente = vente
         self.multiplier = multiplier
+    @property
+    def label(self):
+        return '{}({})'.format(self.cat, self.strike)
     def __repr__(self):
         #return '{}({}, {}, {})'.format(self.cat, self.strike, self.achat, self.vente)
         return '{}({})'.format(self.cat, self.strike)
@@ -35,4 +38,3 @@ class Option:
         elif direction == 'short':
             return -self.multiplier * self.vente
         raise Exception('direction not good {}'.format(direction))
-

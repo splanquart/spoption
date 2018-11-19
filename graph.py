@@ -99,7 +99,7 @@ class Graph:
         ax.spines['bottom'].set_position('zero')  # Sets the X-axis in the center
         for asset, color in assets_color:
             y = asset.payoff(self.sT, direction)
-            label=repr(asset)
+            label=asset.label
             ax.plot(self.sT, y, label=label,color=color)
         plt.xlabel('Stock Price')
         plt.ylabel('Profit and loss')
