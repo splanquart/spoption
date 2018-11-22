@@ -70,12 +70,13 @@ class CallSpread(Strategy):
        .     /         .
        .____/          .
        .................
-       - call_long.strike > put_short.strike
-
-       >>> ps = PutSpread(put[100], put[80])
-
     """
     def __init__(self, call_long, call_short):
+        """ Create a Call spread
+        call_long.strike < call_short.strike
+
+        >>> cs = CallSpread(call[100], call[120])
+        """
         plong = call_long.achat
         pshort = call_short.vente
         super().__init__('Call Spread {}-{}'.format(call_long.strike, call_short.strike))
@@ -93,7 +94,7 @@ class CallSpread(Strategy):
                 continue
             a = by_strike[strike_a]
             b = by_strike[strike_b]
-            css.append(PutSpread(b, a))
+            css.append(CallSpread(a, b))
         return css
 
 
