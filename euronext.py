@@ -5,13 +5,17 @@ from product import Option
 
 
 class Page:
-    def __init__(self, site=None, ticker_idx=0, params=None):
+    def __init__(self, site=None, ticker_idx=0, expiry=None, params=None):
         self.tickers = ['PXA-DPAR', '4PX-DPAR', '2PX-DPAR', '1PX-DPAR', '5PX-DPAR']
         # liste des options euronext CAC40 :
         # https://derivatives.euronext.com/en/equity-index-derivatives/contract-list?quicktabs_309=4#quicktabs-309
         self.site = "https://derivatives.euronext.com/fr/products/index-options" if not site else site
         self.ticker = self.tickers[ticker_idx]
-        self.params = "Class_type=0&Class_symbol=&Class_exchange=&ex=&ps=999&md=11-2018" if not params else params
+        self.expiry = expiry
+        if params:
+            self.params = params
+        else:
+            self.params = 'Class_type=0&Class_symbol=&Class_exchange=&ex=&ps=999&md={}'.format(self.expiry)
 
     def fetch(self):
         requete = requests.get("{}/{}?{}".format(self.site, self.ticker, self.params))
