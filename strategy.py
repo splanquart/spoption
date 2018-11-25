@@ -34,14 +34,15 @@ class Strategy:
                  'strike': o['option'].strike,
                  'direction': o['direction'],
                  'quantity': o['quantity'],
-                 'cost': o['option'].cost(o['direction']) * o['quantity']
+                 'cost': o['option'].cost(o['direction']) * o['quantity'],
+                 'premium': o['option'].premium(o['direction']),
                  } for o in self.options]
 
     def cost(self):
         return sum(e['option'].cost(e['direction']) * e['quantity'] for e in self.options)
 
 
-def RatioSpread(call_long, call_short, ratio=None):
+class RatioSpread(Strategy):
     """
     RatioSpread
     .................
@@ -50,15 +51,32 @@ def RatioSpread(call_long, call_short, ratio=None):
     .        \_____ .
     .................
     """
-    plong = call_long.achat
-    pshort = call_short.vente
-    ratio = ceil(plong/pshort) if not ratio else ratio
-    print('Ratio : {}/{} ~ {}'.format(plong, pshort, ratio))
-    return (Strategy('Ratio Spread {}-{} R:{}'.format(call_long.strike, call_short.strike, ratio))
-            .add(call_long, 'long', 1)
-            .add(call_short, 'short', ratio)
-            )
+    def __init__(self, call_long, call_short, ratio=None):
+        plong = call_long.achat
+        pshort = call_short.vente
+        ratio = ceil(plong / pshort) if not ratio else ratio
+        label = 'Ratio Spread {}-{} R:{}'.format(call_long.strike, call_short.strike, ratio)
+        super().__init__(label)
+        self.add(call_long, 'long', 1)
+        self.add(call_short, 'short', ratio)
 
+    @staticmethod
+    def explorator(list_callput, step=50):
+        """
+        :param: list_callput list of put or list of call
+        :param: step between each option to consider
+        """
+        strikes = [o.strike for o in list_callput]
+        by_strike = dict(zip(strikes, list_callput))
+        css = []
+        for i, strike_a in enumerate(strikes[:-1]):
+            strike_b = strike_a + step
+            if (strike_b not in strikes):
+                continue
+            a = by_strike[strike_a]
+            b = by_strike[strike_b]
+            css.append(RatioSpread(a, b))
+        return css
 
 class CallSpread(Strategy):
     """A Call Spread is buy and sell call of different strike:
@@ -115,6 +133,8 @@ class PutSpread(Strategy):
     def __init__(self, put_long, put_short):
         plong = put_long.achat
         pshort = put_short.vente
+        if put_long.strike <= put_short.strike:
+            raise Exception('The put_long must have a strike greater than put_short')
         super().__init__('Put Spread {}-{}'.format(put_long.strike, put_short.strike))
         self.add(put_long, 'long', 1)
         self.add(put_short, 'short', 1)
