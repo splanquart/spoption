@@ -49,12 +49,15 @@ class Graph:
         self.max = max
         self.step = step
         self.sT = np.arange(self.min,self.max,self.step)
+
     def profit_from_payoff(self, payoff, label=None, color='r'):
         show_profit(self.sT, payoff, label, color)
+
     def profit(self, option, direction, label=None, color='r'):
         payoff = option.payoff(self.sT, direction)
         label = str(option)
         show_profit(self.sT, payoff, label, color)
+
     def compare(self,
                 option_a, direction_a, option_b, direction_b,
                 label_a=None, color_a='r',
@@ -69,19 +72,23 @@ class Graph:
                             payoff_a, label_a, color_a,
                             payoff_b, label_b, color_b
                            )
+
     def profit_strategy(self, strategy, color='chartreuse'):
         payoff = strategy.payoff(self.sT)
         label = str(strategy)
         show_profit(self.sT, payoff, label, color)
+
     def display_summary(self, strategy):
-        detailst = [[l['cat'], l['strike'], l['direction'], l['quantity'], l['cost']]
+        detailst = [[l['cat'], l['strike'], l['direction'], l['quantity'], l['cost'], l['premium']]
                     for l in strategy.summary()]
-        headers=['Category', 'strike', 'direction', 'Quantity', 'Cost']
+        headers=['Category', 'strike', 'direction', 'Quantity', 'Cost', 'Premium']
         display(HTML(tabulate.tabulate(detailst, tablefmt='html', headers=headers)))
+
     def display_page_raw(self, page):
         headers=['Settl.C', 'OIC', 'Day Vol C', 'Last C', 'bid C', 'ask C','C',
                  'strike', 'P', 'bid P', 'ask P', 'Last P', 'Day Vol P', 'OIP', 'Settl.P']
         display(HTML(tabulate.tabulate(page.data, tablefmt='html', headers=headers)))
+
     def profit_rainbow(self, assets, direction, title=None):
         """
         :param assets: list of options or strategies to graph
