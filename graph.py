@@ -13,17 +13,20 @@ def rainbow_color(size):
     colors = dict(mcolors.BASE_COLORS, **mcolors.CSS4_COLORS)
     by_hsv = sorted((tuple(mcolors.rgb_to_hsv(mcolors.to_rgba(color)[:3])), name)
                     for name, color in colors.items())
+    by_hsv = by_hsv[1:]
     sorted_names = [name for hsv, name in by_hsv]
     modulo = ceil(len(sorted_names) / size)
     return sorted_names[::modulo]
 
-def show_profit(x, y, label, color):    
+def show_profit(x, y, label, color, sdeviation=None):
     fig, ax = plt.subplots()
     plt.style.use('dark_background')
     ax.spines['top'].set_visible(False)  # Top border removed
     ax.spines['right'].set_visible(False)  # Right border removed
     ax.spines['bottom'].set_position('zero')  # Sets the X-axis in the center
     ax.plot(x, y, label=label,color=color)
+    if sdeviation:
+        plt.axvspan(sdeviation[0], sdeviation[1], facecolor='#2ca02c', alpha=0.5)
     plt.xlabel('Stock Price')
     plt.ylabel('Profit and loss')
     plt.legend(loc='best')
@@ -44,11 +47,12 @@ def show_profit_compare(x, y1, label1, color1, y2, label2, color2):
     plt.show()
 
 class Graph:
-    def __init__(self, min, max, step=1):
+    def __init__(self, min, max, step=1, sdeviation=None):
         self.min = min
         self.max = max
         self.step = step
         self.sT = np.arange(self.min,self.max,self.step)
+        self.sdeviation = sdeviation
 
     def profit_from_payoff(self, payoff, label=None, color='r'):
         show_profit(self.sT, payoff, label, color)
@@ -56,7 +60,7 @@ class Graph:
     def profit(self, option, direction, label=None, color='r'):
         payoff = option.payoff(self.sT, direction)
         label = str(option)
-        show_profit(self.sT, payoff, label, color)
+        show_profit(self.sT, payoff, label, color, self.sdeviation)
 
     def compare(self,
                 option_a, direction_a, option_b, direction_b,
@@ -76,7 +80,7 @@ class Graph:
     def profit_strategy(self, strategy, color='chartreuse'):
         payoff = strategy.payoff(self.sT)
         label = str(strategy)
-        show_profit(self.sT, payoff, label, color)
+        show_profit(self.sT, payoff, label, color, self.sdeviation)
 
     def display_summary(self, strategy):
         detailst = [[l['cat'], l['strike'], l['direction'], l['quantity'], l['cost'], l['premium']]
