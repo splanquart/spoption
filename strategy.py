@@ -48,7 +48,7 @@ class RatioSpread(Strategy):
     .................
     .     /\        .
     . ___/  \       .
-    .        \_____ .
+    .        \      .
     .................
     """
     def __init__(self, call_long, call_short, ratio=None):
