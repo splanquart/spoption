@@ -13,7 +13,7 @@ def rainbow_color(size):
     colors = dict(mcolors.BASE_COLORS, **mcolors.CSS4_COLORS)
     by_hsv = sorted((tuple(mcolors.rgb_to_hsv(mcolors.to_rgba(color)[:3])), name)
                     for name, color in colors.items())
-    by_hsv = by_hsv[1:]
+    by_hsv = by_hsv[2:]
     sorted_names = [name for hsv, name in by_hsv]
     modulo = ceil(len(sorted_names) / size)
     return sorted_names[::modulo]
@@ -51,7 +51,7 @@ class Graph:
         self.min = min
         self.max = max
         self.step = step
-        self.sT = np.arange(self.min,self.max,self.step)
+        self.sT = np.arange(self.min,self.max, self.step)
         self.sdeviation = sdeviation
 
     def profit_from_payoff(self, payoff, label=None, color='r'):
@@ -108,6 +108,8 @@ class Graph:
         ax.spines['top'].set_visible(False)  # Top border removed
         ax.spines['right'].set_visible(False)  # Right border removed
         ax.spines['bottom'].set_position('zero')  # Sets the X-axis in the center
+        if self.sdeviation:
+            plt.axvspan(self.sdeviation[0], self.sdeviation[1], facecolor='#2ca02c', alpha=0.5)
         for idx, (asset, color) in enumerate(assets_color):
             y = asset.payoff(self.sT, direction)
             label = '#{:02} {}'.format(idx, asset.label)
