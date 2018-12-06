@@ -1,3 +1,5 @@
+from math import sqrt
+
 def pivot_sr(H, B, C):
     """
     Pivot = (H + B + C) / 3
@@ -23,3 +25,13 @@ def pivot_sr(H, B, C):
             'S3': S3,
             'R3': R3,
             }
+
+def deviation(close, volatility, period, precision=0):
+    sd_period = round(sqrt(period / 252) * close * volatility / 100, precision)
+    return {
+        '1': {'min': close - sd_period,
+              'max': close + sd_period},
+        '2': {'min': close - 2 * sd_period,
+              'max': close + 2 * sd_period},
+        'sd': sd_period,
+    }
