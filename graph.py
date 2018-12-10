@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 import tabulate
 
 from matplotlib import colors as mcolors
-from IPython.display import HTML, display
+from IPython.display import HTML, display, Markdown
 
 
 def rainbow_color(size):
@@ -18,33 +18,31 @@ def rainbow_color(size):
     modulo = ceil(len(sorted_names) / size)
     return sorted_names[::modulo]
 
-def show_profit(x, y, label, color, sdeviation=None):
-    fig, ax = plt.subplots()
-    plt.style.use('dark_background')
-    ax.spines['top'].set_visible(False)  # Top border removed
-    ax.spines['right'].set_visible(False)  # Right border removed
-    ax.spines['bottom'].set_position('zero')  # Sets the X-axis in the center
-    ax.plot(x, y, label=label,color=color)
-    if sdeviation:
-        plt.axvspan(sdeviation[0], sdeviation[1], facecolor='#2ca02c', alpha=0.5)
-    plt.xlabel('Stock Price')
-    plt.ylabel('Profit and loss')
-    plt.legend(loc='best')
-    # plt.title('Profit Scheme')
-    plt.show()
-def show_profit_compare(x, y1, label1, color1, y2, label2, color2):    
-    fig, ax = plt.subplots()
-    plt.style.use('dark_background')
-    ax.spines['top'].set_visible(False)  # Top border removed
-    ax.spines['right'].set_visible(False)  # Right border removed
-    ax.spines['bottom'].set_position('zero')  # Sets the X-axis in the center
-    ax.plot(x, y1, label=label1,color=color1)
-    ax.plot(x, y2, label=label2,color=color2)
-    ax.plot(x, y2-y1, dashes=[10, 5, 10, 5], label='delta', color='g')
-    plt.xlabel('Stock Price')
-    plt.ylabel('Profit and loss')
-    plt.legend(loc='best')
-    plt.show()
+
+def display_week_summary(day, psr, deviation):
+    """Display summary of data of the week in iPython Notebook
+    day : datetime.datetime.now()
+    psr : pivot_sr(H, B, C)
+    deviation : deviation(close=4797, volatility=23.13, period=5, precision=0)
+    """
+    week = day.isocalendar()[1]
+    display(Markdown('''### Semaine {}
+- 1 $\sigma$ [{} - {}]
+- 2 $\sigma$ [{} - {}]
+- Pivot {}
+- SR1 [{} - {}]
+- SR2 [{} - {}]
+- SR3 [{} - {}]
+    '''.format(week,
+               round(deviation['1']['min']), round(deviation['1']['max']),
+               round(deviation['2']['min']), round(deviation['2']['max']),
+               round(psr['pivot']),
+               round(psr['R1']), round(psr['S1']),
+               round(psr['R2']), round(psr['S2']),
+               round(psr['R3']), round(psr['S3'])
+              )
+    ))
+
 
 class Graph:
     def __init__(self, min, max, step=1, sdeviation=None):
@@ -54,13 +52,44 @@ class Graph:
         self.sT = np.arange(self.min,self.max, self.step)
         self.sdeviation = sdeviation
 
+    def _setup_profit(self, figsize=None):
+        plt.style.use('dark_background')
+        if figsize:
+            fig, ax = plt.subplots(figsize=figsize)
+        else:
+            fig, ax = plt.subplots()
+        ax.spines['top'].set_visible(False)  # Top border removed
+        ax.spines['right'].set_visible(False)  # Right border removed
+        ax.spines['bottom'].set_position('zero')  # Sets the X-axis in the center
+        if self.sdeviation:
+            plt.axvspan(self.sdeviation[0], self.sdeviation[1], facecolor='#2ca02c', alpha=0.5)
+        return fig, ax
+
+    def _show_profit(self, y, label, color):
+        fig, ax = self._setup_profit()
+        ax.plot(self.sT, y, label=label,color=color)
+        plt.xlabel('Stock Price')
+        plt.ylabel('Profit and loss')
+        plt.legend(loc='best')
+        plt.show()
+
+    def _show_profit_compare(self, y1, label1, color1, y2, label2, color2):
+        fig, ax = self._setup_profit()
+        ax.plot(self.sT, y1, label=label1,color=color1)
+        ax.plot(self.sT, y2, label=label2,color=color2)
+        ax.plot(self.sT, y2-y1, dashes=[10, 5, 10, 5], label='delta', color='orange')
+        plt.xlabel('Stock Price')
+        plt.ylabel('Profit and loss')
+        plt.legend(loc='best')
+        plt.show()
+
     def profit_from_payoff(self, payoff, label=None, color='r'):
-        show_profit(self.sT, payoff, label, color)
+        self._show_profit(payoff, label, color)
 
     def profit(self, option, direction, label=None, color='r'):
         payoff = option.payoff(self.sT, direction)
         label = str(option)
-        show_profit(self.sT, payoff, label, color, self.sdeviation)
+        self._show_profit(payoff, label, color)
 
     def compare(self,
                 option_a, direction_a, option_b, direction_b,
@@ -72,15 +101,14 @@ class Graph:
             label_b = '{} {}'.format(str(option_b), direction_b)
         payoff_a = option_a.payoff(self.sT, direction_a)
         payoff_b = option_b.payoff(self.sT, direction_b)
-        show_profit_compare(self.sT,
-                            payoff_a, label_a, color_a,
-                            payoff_b, label_b, color_b
-                           )
+        self._show_profit_compare(payoff_a, label_a, color_a,
+                                  payoff_b, label_b, color_b
+                                 )
 
     def profit_strategy(self, strategy, color='chartreuse'):
         payoff = strategy.payoff(self.sT)
         label = str(strategy)
-        show_profit(self.sT, payoff, label, color, self.sdeviation)
+        self._show_profit(payoff, label, color)
 
     def display_summary(self, strategy):
         detailst = [[l['cat'], l['strike'], l['direction'], l['quantity'], l['cost'], l['premium']]
@@ -103,13 +131,7 @@ class Graph:
         assets_color = [(key, value)
                       for key, value
                       in zip(assets, rainbow_color(len(assets)))]
-        fig, ax = plt.subplots(figsize=(12, 10))
-        plt.style.use('dark_background')
-        ax.spines['top'].set_visible(False)  # Top border removed
-        ax.spines['right'].set_visible(False)  # Right border removed
-        ax.spines['bottom'].set_position('zero')  # Sets the X-axis in the center
-        if self.sdeviation:
-            plt.axvspan(self.sdeviation[0], self.sdeviation[1], facecolor='#2ca02c', alpha=0.5)
+        fig, ax = self._setup_profit(figsize=(12, 10))
         for idx, (asset, color) in enumerate(assets_color):
             y = asset.payoff(self.sT, direction)
             label = '#{:02} {}'.format(idx, asset.label)
