@@ -41,6 +41,16 @@ class Strategy:
     def cost(self):
         return sum(e['option'].cost(e['direction']) * e['quantity'] for e in self.options)
 
+    def short(self, label=None):
+        """Create a new strategy is shorted this one
+        """
+        if not label:
+            label = 'Short {}'.format(self.label)
+        strategy_short = Strategy(label=label)
+        for o in self.options:
+            direction = 'short' if o['direction'] == 'long' else 'long'
+            strategy_short.add(o['option'], direction, o['quantity'])
+        return strategy_short
 
 class RatioSpread(Strategy):
     """
