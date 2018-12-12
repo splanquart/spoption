@@ -35,3 +35,9 @@ def deviation(close, volatility, period, precision=0):
               'max': close + 2 * sd_period},
         'sd': sd_period,
     }
+
+def atm(price, options):
+    strikes = [o.strike for o in options]
+    atm = round(price / 25, 0) * 25
+    doptions = dict(zip(strikes, options))
+    return doptions[atm]
