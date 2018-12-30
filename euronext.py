@@ -18,8 +18,7 @@ class Page:
     liste des options euronext CAC40 :
     https://derivatives.euronext.com/en/equity-index-derivatives/contract-list?quicktabs_309=4#quicktabs-309
     """
-    def __init__(self, site=None, ticker=None, expiry=None, ticker_idx=0, params=None):
-        self.tickers = ['PXA-DPAR', '4PX-DPAR', '2PX-DPAR', '1PX-DPAR', '5PX-DPAR']
+    def __init__(self, site=None, ticker=Ticker.CACPXA, expiry=None, params=None):
         # liste des options euronext CAC40 :
         # https://derivatives.euronext.com/en/equity-index-derivatives/contract-list?quicktabs_309=4#quicktabs-309
         self.site = "https://derivatives.euronext.com/fr/products/index-options" if not site else site
@@ -34,7 +33,7 @@ class Page:
                                      'ps': 999,
                                      'md': self.expiry
                                     })
-        self.ticker = ticker.value if ticker else self.tickers[ticker_idx]
+        self.ticker = ticker.value
 
     @property
     def _url(self):
